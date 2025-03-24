@@ -39,8 +39,32 @@ const Doctors = () => {
     return result;
   }, [doctors, selectedSpecs, sortField, sortOrder]);
 
-  if (loading) return <div className="text-center mt-10">Loading doctors...</div>;
-  if (error) return <div className="text-center mt-10 text-red-500">Failed to load doctors.</div>;
+  // 🔄 Загрузка — показываем скелетоны
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 p-6">
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="animate-pulse border border-gray-200 rounded-2xl p-5 bg-white"
+          >
+            <div className="bg-blue-100 h-40 w-full rounded-xl mb-4" />
+            <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+            <div className="h-3 bg-gray-200 rounded w-1/2 mb-2" />
+            <div className="h-3 bg-gray-200 rounded w-2/3 mb-2" />
+            <div className="h-3 bg-gray-200 rounded w-1/3 mb-2" />
+            <div className="flex justify-between mt-4">
+              <div className="h-4 w-1/3 bg-gray-200 rounded" />
+              <div className="h-4 w-1/4 bg-gray-200 rounded" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (error)
+    return <div className="text-center mt-10 text-red-500">Failed to load doctors.</div>;
 
   return (
     <div className="flex flex-col lg:flex-row p-6 gap-10">

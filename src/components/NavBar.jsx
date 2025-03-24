@@ -1,67 +1,118 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { assets } from "../assets/assets";
 import { NavLink, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+
 const NavBar = () => {
   const navigate = useNavigate();
-  const [showMenu, setShowMenu] = useState(true);
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const { token, logout } = useContext(AuthContext);
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
-    <div className="flex items-center justify-between text-sm py-4 mb-5 border-b border-b-gray-400">
+    <div className="flex items-center justify-between text-sm py-4 mb-5 border-b border-b-gray-400 relative">
       <img
         onClick={() => navigate("/")}
         className="w-44 cursor-pointer"
         src={assets.logo}
-        alt=""
+        alt="Logo"
       />
+
+      {/* Навигационные ссылки */}
       <ul className="hidden md:flex items-start gap-5 font-medium">
-        <NavLink to={`/`}>
-          <li className="py-1">HOME</li>
-          <hr className="border-none outline-none h-0.5 bg-indigo-500 w-3/5 m-auto hidden" />
-        </NavLink>
-
-        <NavLink to={`/doctors`}>
-          <li className="py-1">ALL DOCTORS</li>
-          <hr className="border-none outline-none h-0.5 bg-indigo-500 w-3/5 m-auto hidden" />
-        </NavLink>
-
-        <NavLink to={`/about`}>
-          <li className="py-1">ABOUT</li>
-          <hr className="border-none outline-none h-0.5 bg-indigo-500 w-3/5 m-auto hidden" />
-        </NavLink>
-
-        <NavLink to={`/contact`}>
-          <li className="py-1">CONTACT</li>
-          <hr className="border-none outline-none h-0.5 bg-indigo-500 w-3/5 m-auto hidden" />
-        </NavLink>
+        {[
+          { name: "HOME", to: "/" },
+          { name: "ALL DOCTORS", to: "/doctors" },
+          { name: "ABOUT", to: "/about" },
+          { name: "CONTACT", to: "/contact" },
+        ].map((item, index) => (
+          <NavLink
+            key={index}
+            to={item.to}
+            className={({ isActive }) =>
+              `relative py-1 transition duration-300 ease-in-out 
+         ${
+           isActive ? "text-indigo-600" : "text-gray-800 hover:text-indigo-500"
+         }`
+            }
+          >
+            {item.name}
+            {/* Линия снизу */}
+            <span
+              className={`absolute left-0 -bottom-1 h-[2px] w-full transition-all duration-300 ${
+                window.location.pathname === item.to
+                  ? "bg-indigo-500 scale-x-100"
+                  : "bg-indigo-500 scale-x-0"
+              } origin-left`}
+            ></span>
+          </NavLink>
+        ))}
       </ul>
-      <div className="flex items-center gap-4">
+
+      {/* Аватар или кнопка Login */}
+      <div className="flex items-center gap-4 relative">
         {token ? (
-          <div className="flex items-center gap-2 cursor-pointer group relative ">
-            <img className="w-8 rounded-full" src={assets.profile_pic} alt="" />
-            <img className="w-2.5" src={assets.dropdown_icon} alt="" />
-            <div className="absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 hidden group-hover:block">
-              <div className="min-w-40 bg-stone-100 rounded flex flex-col gap-2 p-4">
+          <div className="relative" ref={menuRef}>
+            <div
+              className="flex items-center gap-2 cursor-pointer"
+              onClick={() => setIsOpen((prev) => !prev)}
+            >
+              <img
+                className="w-8 h-8 rounded-full"
+                src={assets.profile_pic}
+                alt="Profile"
+              />
+              <img
+                className="w-2.5"
+                src={assets.dropdown_icon}
+                alt="Dropdown"
+              />
+            </div>
+
+            {/* Выпадающее меню */}
+            {isOpen && (
+              <div className="absolute top-full right-0 mt-3 w-44 bg-stone-100 rounded-lg shadow-lg text-gray-700 text-sm flex flex-col gap-2 p-4 z-50">
                 <p
-                  onClick={() => navigate("/my-profile")}
+                  onClick={() => {
+                    navigate("/my-profile");
+                    setIsOpen(false);
+                  }}
                   className="hover:text-black cursor-pointer"
                 >
                   My Profile
                 </p>
                 <p
-                  onClick={() => navigate("/my-appoinments")}
+                  onClick={() => {
+                    navigate("/my-appointments");
+                    setIsOpen(false);
+                  }}
                   className="hover:text-black cursor-pointer"
                 >
-                  My Appoinments
+                  My Appointments
                 </p>
                 <p
-                  onClick={() => setToken(false)}
+                  onClick={() => {
+                    logout();
+                    setIsOpen(false);
+                    navigate("/login");
+                  }}
                   className="hover:text-black cursor-pointer"
                 >
                   Logout
                 </p>
               </div>
-            </div>
+            )}
           </div>
         ) : (
           <button
