@@ -9,16 +9,15 @@ const Login = () => {
   const [form, setForm] = useState({ login: "", password: "" });
   const [error, setError] = useState("");
 
-  const handleLogin = () => {
-    // Мок-проверка логина и пароля
-    if (form.login === "test" && form.password === "test") {
-      const fakeToken = "mocked_token_123";
-      login(fakeToken); // сохраняем токен в контекст и localStorage
-      navigate("/");
-    } else {
-      setError("Invalid mock credentials. Try test / test");
-    }
+  const handleLogin = async () => {
+    const res = await axios.post("https://authorization-service-4b7m.onrender.com/auth/sign-in", {
+      login: form.login,
+      password: form.password,
+    });
+    login(res.data.token);
+    navigate("/");
   };
+  
 
   return (
     <div className="flex justify-center items-center min-h-[80vh]">

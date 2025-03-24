@@ -9,7 +9,7 @@ const TopDoctors = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64 text-gray-700">
-        Загрузка данных...
+        Data Loading...
       </div>
     );
   }
@@ -17,7 +17,7 @@ const TopDoctors = () => {
   if (error) {
     return (
       <div className="flex justify-center items-center h-64 text-red-500">
-        Произошла ошибка при загрузке данных врачей.
+        An error occurred while loading data.
       </div>
     );
   }
@@ -36,7 +36,7 @@ const TopDoctors = () => {
             key={index}
           >
             <div className="bg-blue-50 w-full h-48 flex items-center justify-center text-gray-400">
-              {/* Можно вставить иконку или заглушку */}
+              
               <span className="text-sm">No Image</span>
             </div>
             <div className="p-4">

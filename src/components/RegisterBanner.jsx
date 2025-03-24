@@ -27,7 +27,6 @@ const RegisterBanner = () => {
         </div>
       </div>
 
-      {/* Девушка выходит за блок */}
       <div className="absolute -top-10 right-0 md:right-6 lg:right-12 z-20 w-[180px] sm:w-[230px] md:w-[260px] lg:w-[300px]">
         <img src={appointmentImg} alt="Doctor" className="object-contain" />
       </div>
