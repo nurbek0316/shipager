@@ -9,21 +9,24 @@ const Login = () => {
   const [form, setForm] = useState({ login: "", password: "" });
   const [error, setError] = useState("");
 
-  const handleLogin = async () => {
-    const res = await axios.post("https://authorization-service-4b7m.onrender.com/auth/sign-in", {
-      login: form.login,
-      password: form.password,
-    });
-    login(res.data.token);
-    navigate("/");
+  const handleLogin = () => {
+    // Мок-проверка логина и пароля
+    if (form.login === "test" && form.password === "test") {
+      const fakeToken = "mocked_token_123";
+      login(fakeToken); // сохраняем токен в контекст и localStorage
+      navigate("/");
+    } else {
+      setError("Invalid mock credentials. Try test / test");
+    }
   };
-  
 
   return (
     <div className="flex justify-center items-center min-h-[80vh]">
       <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-md border">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Login</h2>
-        <p className="text-sm text-gray-500 mb-6">Please login to book appointment</p>
+        <p className="text-sm text-gray-500 mb-6">
+          Please login to book appointment
+        </p>
 
         <input
           type="text"
@@ -51,7 +54,10 @@ const Login = () => {
 
         <p className="text-sm text-center mt-4 text-gray-600">
           Don't have an account?{" "}
-          <Link to="/register" className="text-indigo-600 font-medium hover:underline">
+          <Link
+            to="/register"
+            className="text-indigo-600 font-medium hover:underline"
+          >
             Register here
           </Link>
         </p>
