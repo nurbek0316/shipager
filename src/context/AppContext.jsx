@@ -1,15 +1,38 @@
-import { createContext } from "react";
-import { doctors } from "../assets/assets";
+import React, { createContext, useEffect, useState } from "react";
+import axios from "axios";
 
 export const AppContext = createContext();
 
-const AppContextProvider = (props) => {
+export const AppContextProvider = ({ children }) => {
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await axios.get("https://doctor-service-4au2.onrender.com/api/v1/doctors/");
+        setDoctors(response.data.data); // ✅ получаем именно массив докторов
+      } catch (err) {
+        console.error("Ошибка при получении списка врачей:", err);
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
+
   const value = {
     doctors,
+    loading,
+    error,
   };
+
   return (
-    <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
+    <AppContext.Provider value={value}>
+      {children}
+    </AppContext.Provider>
   );
 };
-
-export default AppContextProvider;
