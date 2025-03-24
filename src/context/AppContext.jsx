@@ -11,7 +11,9 @@ export const AppContextProvider = ({ children }) => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await axios.get("https://doctor-service-4au2.onrender.com/api/v1/doctors/");
+        const response = await axios.get(
+          "https://doctor-service-4au2.onrender.com/api/v1/doctors/"
+        );
         setDoctors(response.data.data); // ✅ получаем именно массив докторов
       } catch (err) {
         console.error("Ошибка при получении списка врачей:", err);
@@ -30,9 +32,5 @@ export const AppContextProvider = ({ children }) => {
     error,
   };
 
-  return (
-    <AppContext.Provider value={value}>
-      {children}
-    </AppContext.Provider>
-  );
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

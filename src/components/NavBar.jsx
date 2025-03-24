@@ -4,7 +4,8 @@ import { NavLink, useNavigate } from "react-router-dom";
 const NavBar = () => {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(true);
-  const [token, setToken] = useState(true);
+  const [token, setToken] = useState(localStorage.getItem("token"));
+
   return (
     <div className="flex items-center justify-between text-sm py-4 mb-5 border-b border-b-gray-400">
       <img
@@ -67,7 +68,7 @@ const NavBar = () => {
             onClick={() => navigate("/login")}
             className="bg-indigo-500 text-white px-8 py-3 rounded-full cursor-pointer font-light hidden md:block"
           >
-            Create account
+            Login
           </button>
         )}
       </div>
