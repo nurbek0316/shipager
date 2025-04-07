@@ -4,7 +4,6 @@ const Footer = () => {
   return (
     <footer className="mt-20 pt-12 border-t border-gray-200 text-sm text-gray-600">
       <div className="flex flex-col sm:flex-row justify-between gap-10 sm:gap-20">
-        {/* Логотип и описание */}
         <div className="max-w-sm">
           <div className="flex items-center gap-2 mb-4">
             <img
@@ -23,7 +22,6 @@ const Footer = () => {
           </p>
         </div>
 
-        {/* Ссылки */}
         <div>
           <h3 className="text-black font-semibold mb-4">COMPANY</h3>
           <ul className="flex flex-col gap-2">
@@ -35,7 +33,6 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* Контакты */}
         <div>
           <h3 className="text-black font-semibold mb-4">GET IN TOUCH</h3>
           <div className="flex gap-4 mb-2">

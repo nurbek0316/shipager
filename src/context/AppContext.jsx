@@ -14,7 +14,7 @@ export const AppContextProvider = ({ children }) => {
         const response = await axios.get(
           "https://doctor-service-4au2.onrender.com/api/v1/doctors/"
         );
-        setDoctors(response.data.data); // ✅ получаем именно массив докторов
+        setDoctors(response.data.data); 
       } catch (err) {
         console.error("Ошибка при получении списка врачей:", err);
         setError(err);

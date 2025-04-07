@@ -25,7 +25,9 @@ const Doctors = () => {
     let result = [...doctors];
 
     if (selectedSpecs.length > 0) {
-      result = result.filter((doc) => selectedSpecs.includes(doc.specialization));
+      result = result.filter((doc) =>
+        selectedSpecs.includes(doc.specialization)
+      );
     }
 
     if (sortField) {
@@ -63,11 +65,14 @@ const Doctors = () => {
   }
 
   if (error)
-    return <div className="text-center mt-10 text-red-500">Failed to load doctors.</div>;
+    return (
+      <div className="text-center mt-10 text-red-500">
+        Failed to load doctors.
+      </div>
+    );
 
   return (
     <div className="flex flex-col lg:flex-row p-6 gap-10">
-      {/* Doctor Cards */}
       <div className="flex-1">
         <h1 className="text-3xl font-medium text-gray-800 mb-8 text-center lg:text-left">
           All Doctors
@@ -87,8 +92,12 @@ const Doctors = () => {
                 <div className="bg-blue-50 w-full h-40 flex items-center justify-center text-gray-400 rounded-xl mb-4">
                   <span className="text-sm">No Image</span>
                 </div>
-                <p className="text-lg font-semibold text-gray-800 mb-1">{item.name}</p>
-                <p className="text-blue-600 text-sm mb-1">{item.specialization}</p>
+                <p className="text-lg font-semibold text-gray-800 mb-1">
+                  {item.name}
+                </p>
+                <p className="text-blue-600 text-sm mb-1">
+                  {item.specialization}
+                </p>
                 <p className="text-gray-500 text-sm mb-1">{item.address}</p>
                 <p className="text-gray-500 text-sm mb-1">
                   Experience: {item.experience} years
@@ -103,16 +112,19 @@ const Doctors = () => {
         </div>
       </div>
 
-      {/* Sidebar Filters */}
       <div className="w-full lg:w-72 bg-white border border-gray-200 rounded-2xl p-5 h-fit shadow-sm">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">Filters</h2>
 
-        {/* Specialization */}
         <div className="mb-6">
-          <h3 className="text-sm font-medium text-gray-700 mb-2">Specialization</h3>
+          <h3 className="text-sm font-medium text-gray-700 mb-2">
+            Specialization
+          </h3>
           <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1">
             {specializations.map((spec, idx) => (
-              <label key={idx} className="flex items-center gap-2 text-sm text-gray-600">
+              <label
+                key={idx}
+                className="flex items-center gap-2 text-sm text-gray-600"
+              >
                 <input
                   type="checkbox"
                   checked={selectedSpecs.includes(spec)}
@@ -125,7 +137,6 @@ const Doctors = () => {
           </div>
         </div>
 
-        {/* Sort by */}
         <div className="mb-4">
           <h3 className="text-sm font-medium text-gray-700 mb-1">Sort by</h3>
           <select
@@ -139,7 +150,6 @@ const Doctors = () => {
           </select>
         </div>
 
-        {/* Sort order */}
         <div>
           <h3 className="text-sm font-medium text-gray-700 mb-1">Order</h3>
           <select
@@ -154,6 +164,7 @@ const Doctors = () => {
       </div>
     </div>
   );
+  
 };
 
 export default Doctors;

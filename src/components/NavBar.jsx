@@ -4,24 +4,31 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 const NavBar = () => {
-  const navigate = useNavigate();
   const { token, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
         setIsOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const navLinks = [
+    { to: "/", label: "HOME" },
+    { to: "/doctors", label: "ALL DOCTORS" },
+    { to: "/about", label: "ABOUT" },
+    { to: "/contact", label: "CONTACT" },
+    { to: "/subscription", label: "SUBSCRIPTION" },
+  ];
+
   return (
-    <div className="flex items-center justify-between text-sm py-4 mb-5 border-b border-b-gray-400 relative">
+    <div className="flex items-center justify-between text-sm py-4 mb-5 border-b border-gray-300 relative">
       <img
         onClick={() => navigate("/")}
         className="w-44 cursor-pointer"
@@ -29,44 +36,30 @@ const NavBar = () => {
         alt="Logo"
       />
 
-      {/* Навигационные ссылки */}
-      <ul className="hidden md:flex items-start gap-5 font-medium">
-        {[
-          { name: "HOME", to: "/" },
-          { name: "ALL DOCTORS", to: "/doctors" },
-          { name: "ABOUT", to: "/about" },
-          { name: "CONTACT", to: "/contact" },
-        ].map((item, index) => (
-          <NavLink
-            key={index}
-            to={item.to}
-            className={({ isActive }) =>
-              `relative py-1 transition duration-300 ease-in-out 
-         ${
-           isActive ? "text-indigo-600" : "text-gray-800 hover:text-indigo-500"
-         }`
-            }
-          >
-            {item.name}
-            {/* Линия снизу */}
-            <span
-              className={`absolute left-0 -bottom-1 h-[2px] w-full transition-all duration-300 ${
-                window.location.pathname === item.to
-                  ? "bg-indigo-500 scale-x-100"
-                  : "bg-indigo-500 scale-x-0"
-              } origin-left`}
-            ></span>
+      <ul className="hidden md:flex items-start gap-6 font-medium">
+        {navLinks.map(({ to, label }) => (
+          <NavLink key={to} to={to}>
+            {({ isActive }) => (
+              <li
+                className={`py-1 border-b-2 transition-all duration-300 ${
+                  isActive
+                    ? "border-indigo-500 text-indigo-600"
+                    : "border-transparent hover:border-indigo-500 hover:text-indigo-600"
+                }`}
+              >
+                {label}
+              </li>
+            )}
           </NavLink>
         ))}
       </ul>
 
-      {/* Аватар или кнопка Login */}
       <div className="flex items-center gap-4 relative">
         {token ? (
-          <div className="relative" ref={menuRef}>
+          <div ref={menuRef} className="relative">
             <div
-              className="flex items-center gap-2 cursor-pointer"
               onClick={() => setIsOpen((prev) => !prev)}
+              className="flex items-center gap-2 cursor-pointer"
             >
               <img
                 className="w-8 h-8 rounded-full"
@@ -80,34 +73,26 @@ const NavBar = () => {
               />
             </div>
 
-            {/* Выпадающее меню */}
             {isOpen && (
               <div className="absolute top-full right-0 mt-3 w-44 bg-stone-100 rounded-lg shadow-lg text-gray-700 text-sm flex flex-col gap-2 p-4 z-50">
                 <p
-                  onClick={() => {
-                    navigate("/my-profile");
-                    setIsOpen(false);
-                  }}
-                  className="hover:text-black cursor-pointer"
+                  onClick={() => navigate("/my-profile")}
+                  className="cursor-pointer hover:text-black"
                 >
                   My Profile
                 </p>
                 <p
-                  onClick={() => {
-                    navigate("/my-appointments");
-                    setIsOpen(false);
-                  }}
-                  className="hover:text-black cursor-pointer"
+                  onClick={() => navigate("/my-appointments")}
+                  className="cursor-pointer hover:text-black"
                 >
                   My Appointments
                 </p>
                 <p
                   onClick={() => {
                     logout();
-                    setIsOpen(false);
                     navigate("/login");
                   }}
-                  className="hover:text-black cursor-pointer"
+                  className="cursor-pointer hover:text-black"
                 >
                   Logout
                 </p>

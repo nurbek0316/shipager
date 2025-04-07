@@ -4,10 +4,10 @@ import SpecialutyMenu from "../components/SpecialutyMenu";
 import TopDoctors from "../components/topDoctors";
 import RegisterBanner from "../components/RegisterBanner";
 import Footer from "../components/Footer";
-import { AuthContext } from "../context/AuthContext"; 
+import { AuthContext } from "../context/AuthContext";
 
 const Home = () => {
-  const { token } = useContext(AuthContext); 
+  const { token } = useContext(AuthContext);
 
   return (
     <div>
@@ -15,10 +15,9 @@ const Home = () => {
       <SpecialutyMenu />
       <TopDoctors />
 
-      {/* Показывать только если НЕ авторизован */}
       {!token && <RegisterBanner />}
 
-      <Footer />
+      
     </div>
   );
 };
