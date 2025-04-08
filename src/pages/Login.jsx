@@ -19,7 +19,9 @@ const Login = () => {
         }
       );
 
-      // console.log("LOGIN RESPONSE", res.data); 
+      // console.log("LOGIN RESPONSE", res.data);
+      // console.log("asda");
+      // console.log(res);
 
       const token = res.data.accessToken;
 

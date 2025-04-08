@@ -3,7 +3,6 @@ import Header from "../components/Header";
 import SpecialutyMenu from "../components/SpecialutyMenu";
 import TopDoctors from "../components/topDoctors";
 import RegisterBanner from "../components/RegisterBanner";
-import Footer from "../components/Footer";
 import { AuthContext } from "../context/AuthContext";
 
 const Home = () => {

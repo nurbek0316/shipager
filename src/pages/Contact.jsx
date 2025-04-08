@@ -116,7 +116,7 @@ const Contact = () => {
           <div className="relative h-64 rounded-xl overflow-hidden">
             <iframe
               title="Location"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2950.768871383278!2d-80.24644668408722!3d29.14441898197821!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88dba1edc08923e3%3A0x542a9b6ccbb28bfa!2sPort%20Canaveral%20Cruise%20Port!5e0!3m2!1sen!2sus!4v1634256963765!5m2!1sen!2sus"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2924.051636211941!2d76.92149181526896!3d43.238876979136444!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38836eb66c1433b5%3A0xd89997b828e3c36b!2sTole%20Bi%20St%2059%2C%20Almaty%20050000%2C%20Kazakhstan!5e0!3m2!1sen!2skz!4v1712668055536!5m2!1sen!2skz"
               className="w-full h-full border-0"
               allowFullScreen=""
               loading="lazy"

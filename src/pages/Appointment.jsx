@@ -63,13 +63,13 @@ const Appointment = () => {
   );
 
   const formatTime = (str) =>
-    new Date(str).toLocaleTimeString([], {
+    new Date(str).toLocaleTimeString("en-GB", {
       hour: "2-digit",
       minute: "2-digit",
     });
 
   const formatDateLabel = (str) =>
-    new Date(str).toLocaleDateString("en-US", {
+    new Date(str).toLocaleDateString("en-GB", {
       weekday: "short",
       day: "numeric",
     });
@@ -79,29 +79,22 @@ const Appointment = () => {
     const user = jwtDecode(token);
     const payload = {
       doctor_id: doctor.id,
-      user_id: user.userId, 
+      user_id: user.userId,
       schedule_id: selectedSlot.schedule_id,
       Status: "active",
     };
 
     try {
-      console.log("📦 Booking payload:", payload);
-
       await axios.post(
         "https://doctor-service-4au2.onrender.com/api/v1/appointments/",
         payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
       setSuccess("Appointment successfully booked!");
       setSelectedSlot(null);
     } catch (error) {
       console.error("Booking error:", error);
-      setSuccess("❌ Failed to book appointment.");
+      setSuccess("Failed to book appointment.");
     }
   };
 
@@ -170,7 +163,7 @@ const Appointment = () => {
                         : "bg-white text-gray-700 hover:border-blue-400"
                     }`}
                   >
-                    {formatTime(slot.slot_start)}
+                    {formatTime(slot.slot_start)} - {formatTime(slot.slot_end)}
                   </button>
                 ))}
               </div>

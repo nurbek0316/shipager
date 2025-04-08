@@ -31,7 +31,7 @@ const Register = () => {
         }
       );
 
-      const token = res.data.token;
+      const token = res.data.accessToken;
 
       if (token) {
         login(token);
@@ -53,7 +53,7 @@ const Register = () => {
 
         <input
           type="text"
-          placeholder="Username"
+          placeholder="login"
           value={form.login}
           onChange={(e) => setForm({ ...form, login: e.target.value })}
           className="input mb-3"

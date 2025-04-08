@@ -6,7 +6,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import MyProfile from "./pages/MyProfile";
+import MyCards from "./pages/MyCards";
 import MyAppointments from "./pages/MyAppointments";
 import Appointment from "./pages/Appointment";
 import Subscription from "./pages/Subscription";
@@ -29,7 +29,7 @@ const App = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/my-profile" element={<MyProfile />} />
+          <Route path="/my-cards" element={<MyCards />} />
           <Route path="/my-appointments" element={<MyAppointments />} />
           <Route path="/subscription" element={<Subscription />} /> 
           <Route path="/payment" element={<PaymentPage />} /> 

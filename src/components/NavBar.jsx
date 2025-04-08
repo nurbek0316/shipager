@@ -76,10 +76,10 @@ const NavBar = () => {
             {isOpen && (
               <div className="absolute top-full right-0 mt-3 w-44 bg-stone-100 rounded-lg shadow-lg text-gray-700 text-sm flex flex-col gap-2 p-4 z-50">
                 <p
-                  onClick={() => navigate("/my-profile")}
+                  onClick={() => navigate("/my-cards")}
                   className="cursor-pointer hover:text-black"
                 >
-                  My Profile
+                  My Cards
                 </p>
                 <p
                   onClick={() => navigate("/my-appointments")}

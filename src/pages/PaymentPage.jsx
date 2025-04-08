@@ -1,52 +1,44 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
-const SubscriptionPaymentForm = () => {
-  const [formData, setFormData] = useState({
+const PaymentPage = () => {
+  const { state } = useLocation();
+  const { plan, totalPrice } = state || {};
+
+  const [form, setForm] = useState({
     iin: "",
-    phone: "+7",
-    name: "",
+    phone: "",
     email: "",
-    amount: "1500.00",
-    description: "Оплата годовой подписки",
-    accountId: `user-${Math.floor(Math.random() * 10000)}`, 
+    name: "",
   });
 
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!/^\d{12}$/.test(formData.iin)) {
-      newErrors.iin = "ИИН должен содержать 12 цифр";
+  const handlePayment = async () => {
+    if (!form.iin || !form.phone || !form.email || !form.name) {
+      setError("Please fill in all fields.");
+      return;
     }
 
-    if (!/^\+7\d{10}$/.test(formData.phone)) {
-      newErrors.phone = "Введите номер в формате +7XXXXXXXXXX";
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Введите корректный email";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!validateForm()) return;
-
-    setIsLoading(true);
-    setPaymentStatus(null);
+    setLoading(true);
+    setError("");
 
     try {
       const response = await axios.post(
         "https://authorization-service-4b7m.onrender.com/auth/createPayment",
-        formData,
+        {
+          iin: form.iin,
+          phone: form.phone,
+          amount: totalPrice.toString(),
+          description: `Payment for ${plan.name}`,
+          accountId: "acc-54321",
+          name: form.name,
+          email: form.email,
+          backLink: "https://shipager.kz/payment-success",
+        },
         {
           headers: {
             "Content-Type": "application/json",
@@ -54,145 +46,119 @@ const SubscriptionPaymentForm = () => {
         }
       );
 
-      // Вариант 1: Если API возвращает URL для перенаправления
-      if (response.data.paymentUrl) {
-        window.location.href = response.data.paymentUrl;
-        return;
+      if (response.data.success) {
+        const paymentId = response.data.data;
+        setSuccessMessage("Payment created successfully!");
+        setTimeout(() => {
+          window.location.href = `https://authorization-service-4b7m.onrender.com/auth/pay?id=${paymentId}`;
+        }, 1500);
+      } else {
+        setError("Error creating payment.");
       }
-
-      
-      setPaymentStatus("success");
-      console.log("Платеж создан:", response.data);
-    } catch (error) {
-      console.error("Ошибка платежа:", error);
-      setPaymentStatus("error");
+    } catch (err) {
+      setError("Failed to create payment.");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    
-    if (name === "phone" && !value.startsWith("+7")) {
-      setFormData({
-        ...formData,
-        [name]: "+7" + value.replace(/[^\d]/g, "").slice(0, 10),
-      });
-      return;
-    }
-
-    setFormData({ ...formData, [name]: value });
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-center">
-        Оформление подписки
+    <div className="max-w-lg mx-auto p-8 bg-white rounded-xl shadow-xl mt-10">
+      <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">
+        Payment
       </h2>
 
-      {paymentStatus === "success" ? (
-        <div className="p-4 mb-4 text-green-700 bg-green-100 rounded">
-          Платеж успешно создан! Проверьте ваш email для дальнейших инструкций.
+      <div className="space-y-6">
+        <div>
+          <label
+            htmlFor="iin"
+            className="block text-sm font-medium text-gray-600"
+          >
+            IIN
+          </label>
+          <input
+            type="text"
+            id="iin"
+            value={form.iin}
+            onChange={(e) => setForm({ ...form, iin: e.target.value })}
+            className="w-full border px-4 py-3 rounded-lg mt-2 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Enter IIN"
+          />
         </div>
-      ) : paymentStatus === "error" ? (
-        <div className="p-4 mb-4 text-red-700 bg-red-100 rounded">
-          Ошибка при создании платежа. Пожалуйста, попробуйте позже.
+
+        <div>
+          <label
+            htmlFor="phone"
+            className="block text-sm font-medium text-gray-600"
+          >
+            Phone
+          </label>
+          <input
+            type="text"
+            id="phone"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            className="w-full border px-4 py-3 rounded-lg mt-2 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Enter phone number"
+          />
         </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              ФИО
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              ИИН
-            </label>
-            <input
-              type="text"
-              name="iin"
-              value={formData.iin}
-              onChange={handleChange}
-              maxLength="12"
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.iin ? "border-red-500" : ""
-              }`}
-              required
-            />
-            {errors.iin && (
-              <p className="mt-1 text-sm text-red-600">{errors.iin}</p>
-            )}
-          </div>
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-600"
+          >
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            className="w-full border px-4 py-3 rounded-lg mt-2 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Enter email"
+          />
+        </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Телефон
-            </label>
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.phone ? "border-red-500" : ""
-              }`}
-              required
-            />
-            {errors.phone && (
-              <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
-            )}
-          </div>
+        <div>
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-600"
+          >
+            Name
+          </label>
+          <input
+            type="text"
+            id="name"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            className="w-full border px-4 py-3 rounded-lg mt-2 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Enter your name"
+          />
+        </div>
+      </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.email ? "border-red-500" : ""
-              }`}
-              required
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-            )}
-          </div>
+      {error && <p className="text-red-600 text-sm mt-3">{error}</p>}
 
-          <div className="pt-2">
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                isLoading ? "opacity-75 cursor-not-allowed" : ""
-              }`}
-            >
-              {isLoading ? "Обработка..." : "Оплатить 1500 ₸"}
-            </button>
-          </div>
-
-          <p className="text-xs text-gray-500 mt-4">
-            Нажимая кнопку, вы соглашаетесь с условиями подписки
-          </p>
-        </form>
+      {successMessage && (
+        <p className="text-green-600 text-sm mt-3">{successMessage}</p>
       )}
+
+      <div className="mt-4">
+        <p className="text-lg font-semibold text-gray-800">
+          Amount: {totalPrice} ₸
+        </p>
+      </div>
+
+      <button
+        onClick={handlePayment}
+        disabled={loading}
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg mt-6 transition duration-300"
+      >
+        {loading ? "Creating payment..." : "Pay"}
+      </button>
     </div>
   );
 };
 
-export default SubscriptionPaymentForm;
+export default PaymentPage;
