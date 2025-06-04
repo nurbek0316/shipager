@@ -3,8 +3,9 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 
 const PaymentPage = () => {
-  const { state } = useLocation();
-  const { plan, totalPrice } = state || {};
+  // Читаем именно planName и totalPrice:
+  const location = useLocation();
+  const { planName, totalPrice } = location.state || {};
 
   const [form, setForm] = useState({
     iin: "",
@@ -12,7 +13,6 @@ const PaymentPage = () => {
     email: "",
     name: "",
   });
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -33,7 +33,7 @@ const PaymentPage = () => {
           iin: form.iin,
           phone: form.phone,
           amount: totalPrice.toString(),
-          description: `Payment for ${plan.name}`,
+          description: `Payment for ${planName}`, // используем planName
           accountId: "acc-54321",
           name: form.name,
           email: form.email,
@@ -65,7 +65,7 @@ const PaymentPage = () => {
   return (
     <div className="max-w-lg mx-auto p-8 bg-white rounded-xl shadow-xl mt-10">
       <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">
-        Payment
+        Payment for {planName}
       </h2>
 
       <div className="space-y-6">
@@ -139,7 +139,6 @@ const PaymentPage = () => {
       </div>
 
       {error && <p className="text-red-600 text-sm mt-3">{error}</p>}
-
       {successMessage && (
         <p className="text-green-600 text-sm mt-3">{successMessage}</p>
       )}

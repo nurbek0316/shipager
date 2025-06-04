@@ -9,6 +9,7 @@ const MyAppointments = () => {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [appointmentToCancel, setAppointmentToCancel] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -21,7 +22,17 @@ const MyAppointments = () => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
-        setAppointments(res.data.data || []);
+        console.log('Appointments response:', res.data);
+        const appointments = res.data.data || [];
+        
+        const formattedAppointments = appointments
+          .filter(appt => appt.status !== "canceled")
+          .map(appt => ({
+            ...appt,
+            meeting_url: appt.meeting_url || null
+          }));
+
+        setAppointments(formattedAppointments);
       } catch (error) {
         console.error("Error fetching appointments:", error);
         setAppointments([]);
@@ -46,47 +57,13 @@ const MyAppointments = () => {
       );
 
       setAppointments((prev) =>
-        prev.map((appt) =>
-          appt.id === appointmentToCancel
-            ? { ...appt, status: "canceled" }
-            : appt
-        )
+        prev.filter((appt) => appt.id !== appointmentToCancel)
       );
 
       setModalOpen(false);
       setAppointmentToCancel(null);
     } catch (error) {
       console.error("Error cancelling appointment:", error);
-    }
-  };
-
-  const handlePayment = async (appt) => {
-    try {
-      const user = jwtDecode(token);
-      const doctorRes = await axios.get(
-        `https://doctor-service-4au2.onrender.com/api/v1/doctors/${appt.doctor_id}`
-      );
-
-      const doctor = doctorRes.data.data;
-      const amount = doctor.price;
-      const paymentPayload = {
-        phone: "+77011234567",
-        amount: amount.toString(),
-        description: `Appointment with ${doctor.name}`,
-        accountId: user.userId,
-        email: "demo@shipager.kz",
-        backLink: "https://shipager.kz/payment-success",
-      };
-
-      const paymentRes = await axios.post(
-        "https://authorization-service-4b7m.onrender.com/auth/createPayment",
-        paymentPayload
-      );
-
-      const paymentId = paymentRes.data.data;
-      window.location.href = `https://authorization-service-4b7m.onrender.com/auth/pay?id=${paymentId}`;
-    } catch (error) {
-      console.error("💳 Payment error:", error);
     }
   };
 
@@ -97,11 +74,9 @@ const MyAppointments = () => {
       timeZone: "UTC",
     });
 
-  // const doctorPriceToNumber = (priceStr) => {
-  //   if (!priceStr) return "150.00";
-  //   const num = Number(priceStr.toString().replace(/[^\d.]/g, ""));
-  //   return num ? num.toFixed(2) : "150.00";
-  // };
+  const filteredAppointments = appointments.filter(appt => 
+    statusFilter === "all" ? true : appt.status === statusFilter
+  );
 
   if (!token) {
     return (
@@ -119,18 +94,40 @@ const MyAppointments = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
-      <h2 className="text-2xl font-bold mb-6">My Appointments</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">My Appointments</h2>
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-gray-600">Filter by status:</label>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="border rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"
+          >
+            <option value="all">All</option>
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+      </div>
 
-      {appointments.length === 0 ? (
-        <p className="text-gray-500">No appointments found.</p>
+      {filteredAppointments.length === 0 ? (
+        <div className="text-center py-10">
+          <p className="text-gray-500 mb-2">No appointments found.</p>
+          {statusFilter !== "all" && (
+            <button
+              onClick={() => setStatusFilter("all")}
+              className="text-indigo-600 hover:text-indigo-700 text-sm"
+            >
+              Show all appointments
+            </button>
+          )}
+        </div>
       ) : (
         <div className="grid gap-6">
-          {appointments.map((appt) => (
+          {filteredAppointments.map((appt) => (
             <div
               key={appt.id}
-              className={`bg-white p-5 rounded-xl shadow border ${
-                appt.status === "canceled" ? "opacity-60" : ""
-              }`}
+              className="bg-white p-5 rounded-xl shadow border hover:shadow-md transition-shadow"
             >
               <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                 <div className="w-28 h-28 rounded-xl bg-blue-100 flex items-center justify-center text-gray-400 text-sm">
@@ -152,9 +149,7 @@ const MyAppointments = () => {
                     <span className="font-semibold">Status:</span>{" "}
                     <span
                       className={`capitalize ${
-                        appt.status === "canceled"
-                          ? "text-red-500"
-                          : appt.status === "completed"
+                        appt.status === "completed"
                           ? "text-green-600"
                           : "text-yellow-600"
                       }`}
@@ -166,12 +161,16 @@ const MyAppointments = () => {
 
                 {appt.status === "active" && (
                   <div className="flex flex-col items-end gap-2 w-full sm:w-auto">
-                    <button
-                      onClick={() => handlePayment(appt)}
-                      className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
-                    >
-                      Pay
-                    </button>
+                    {appt.meeting_url && (
+                      <a
+                        href={appt.meeting_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-blue-600 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-700 text-center"
+                      >
+                        Join Meeting
+                      </a>
+                    )}
                     <button
                       onClick={() => confirmCancel(appt.id)}
                       className="border border-red-300 text-red-600 text-sm px-4 py-2 rounded-md hover:bg-red-50"
@@ -184,9 +183,6 @@ const MyAppointments = () => {
                 {appt.status === "completed" && (
                   <div className="text-green-600 font-semibold">✔ Paid</div>
                 )}
-                {appt.status === "canceled" && (
-                  <div className="text-red-400 text-sm">✖ Canceled</div>
-                )}
               </div>
             </div>
           ))}
@@ -194,8 +190,12 @@ const MyAppointments = () => {
       )}
 
       {modalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 transition-all duration-300">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-80 animate-fade-in">
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div 
+            className="fixed inset-0" 
+            onClick={() => setModalOpen(false)}
+          ></div>
+          <div className="bg-white rounded-xl shadow-xl p-6 w-80 animate-fade-in z-50 border border-gray-200">
             <h2 className="text-lg font-bold mb-4 text-center text-gray-800">
               Cancel Appointment?
             </h2>

@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -25,20 +26,61 @@ const Footer = () => {
         <div>
           <h3 className="text-black font-semibold mb-4">COMPANY</h3>
           <ul className="flex flex-col gap-2">
-            <li>Home</li>
-            <li>Clinic appointment</li>
-            <li>Analyzes</li>
-            <li>Subscription</li>
-            <li>Health monitoring</li>
+            <li>
+              <Link to="/" className="hover:text-indigo-600 transition-colors">
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link to="/clinic-appointment" className="hover:text-indigo-600 transition-colors">
+                Clinic appointment
+              </Link>
+            </li>
+            <li>
+              <Link to="/analyzes" className="hover:text-indigo-600 transition-colors">
+                Analyzes
+              </Link>
+            </li>
+            <li>
+              <Link to="/subscription" className="hover:text-indigo-600 transition-colors">
+                Subscription
+              </Link>
+            </li>
+            <li>
+              <Link to="/health-monitoring" className="hover:text-indigo-600 transition-colors">
+                Health monitoring
+              </Link>
+            </li>
           </ul>
         </div>
 
         <div>
           <h3 className="text-black font-semibold mb-4">GET IN TOUCH</h3>
           <div className="flex gap-4 mb-2">
-            <img src="/vk.svg" alt="VK" className="w-5 h-5" />
-            <img src="/tg.svg" alt="Telegram" className="w-5 h-5" />
-            <img src="/yt.svg" alt="YouTube" className="w-5 h-5" />
+            <a
+              href="https://vk.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-transform hover:scale-110"
+            >
+              <img src="/src/assets/vk.svg" alt="VK" className="w-6 h-6" />
+            </a>
+            <a
+              href="https://t.me"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-transform hover:scale-110"
+            >
+              <img src="/src/assets/tg.svg" alt="Telegram" className="w-6 h-6" />
+            </a>
+            <a
+              href="https://youtube.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-transform hover:scale-110"
+            >
+              <img src="/src/assets/yt.svg" alt="YouTube" className="w-6 h-6" />
+            </a>
           </div>
           <p>shipager@gmail.com</p>
         </div>

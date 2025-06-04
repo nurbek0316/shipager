@@ -27,6 +27,14 @@ const NavBar = () => {
     { to: "/subscription", label: "SUBSCRIPTION" },
   ];
 
+  const profileMenuItems = [
+    { to: "/my-profile", label: "My Profile" },
+    { to: "/my-cards", label: "My Cards" },
+    { to: "/analyzes", label: "My Analyzes" },
+    { to: "/health-monitoring", label: "Health Monitoring" },
+    { to: "/my-appointments", label: "My Appointments" },
+  ];
+
   return (
     <div className="flex items-center justify-between text-sm py-4 mb-5 border-b border-gray-300 relative">
       <img
@@ -75,24 +83,25 @@ const NavBar = () => {
 
             {isOpen && (
               <div className="absolute top-full right-0 mt-3 w-44 bg-stone-100 rounded-lg shadow-lg text-gray-700 text-sm flex flex-col gap-2 p-4 z-50">
-                <p
-                  onClick={() => navigate("/my-cards")}
-                  className="cursor-pointer hover:text-black"
-                >
-                  My Cards
-                </p>
-                <p
-                  onClick={() => navigate("/my-appointments")}
-                  className="cursor-pointer hover:text-black"
-                >
-                  My Appointments
-                </p>
+                {profileMenuItems.map(({ to, label }) => (
+                  <p
+                    key={to}
+                    onClick={() => {
+                      navigate(to);
+                      setIsOpen(false);
+                    }}
+                    className="cursor-pointer hover:text-black"
+                  >
+                    {label}
+                  </p>
+                ))}
+                <div className="h-px bg-gray-200 my-1"></div>
                 <p
                   onClick={() => {
                     logout();
                     navigate("/login");
                   }}
-                  className="cursor-pointer hover:text-black"
+                  className="cursor-pointer hover:text-black text-red-600 hover:text-red-700"
                 >
                   Logout
                 </p>

@@ -1,14 +1,31 @@
 import React, { useEffect, useState, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 
-const StarRating = ({ rating }) => {
+const StarRating = ({ rating, interactive = false, onRatingChange = () => {} }) => {
   const fullStars = Math.floor(rating);
   const hasHalf = rating % 1 >= 0.5;
   const emptyStars = 5 - fullStars - (hasHalf ? 1 : 0);
+
+  if (interactive) {
+    return (
+      <div className="flex text-yellow-400 text-xl">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            onClick={() => onRatingChange(star)}
+            className="hover:scale-110 transition-transform"
+          >
+            {star <= rating ? <FaStar /> : <FaRegStar />}
+          </button>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="flex text-yellow-400 text-sm">
       {[...Array(fullStars)].map((_, i) => (
@@ -22,8 +39,136 @@ const StarRating = ({ rating }) => {
   );
 };
 
+const ReviewSection = ({ doctorId }) => {
+  const [reviews, setReviews] = useState([]);
+  const [newReview, setNewReview] = useState({ rating: 0, comment: '' });
+  const { token } = useContext(AuthContext);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+
+  useEffect(() => {
+    // Load reviews from localStorage
+    const storedReviews = localStorage.getItem(`doctorReviews_${doctorId}`);
+    if (storedReviews) {
+      setReviews(JSON.parse(storedReviews));
+    }
+  }, [doctorId]);
+
+  const handleSubmitReview = () => {
+    if (!token) {
+      alert('Please log in to leave a review');
+      return;
+    }
+
+    if (newReview.rating === 0) {
+      alert('Please select a rating');
+      return;
+    }
+
+    const user = jwtDecode(token);
+    const review = {
+      ...newReview,
+      userId: user.userId,
+      userName: user.name || 'Anonymous',
+      date: new Date().toISOString(),
+      id: Date.now()
+    };
+
+    const updatedReviews = [...reviews, review];
+    setReviews(updatedReviews);
+    localStorage.setItem(`doctorReviews_${doctorId}`, JSON.stringify(updatedReviews));
+    
+    setNewReview({ rating: 0, comment: '' });
+    setShowReviewForm(false);
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-GB', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  return (
+    <div className="mt-10">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-semibold">Reviews</h2>
+        {token && !showReviewForm && (
+          <button
+            onClick={() => setShowReviewForm(true)}
+            className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+          >
+            Write a Review
+          </button>
+        )}
+      </div>
+
+      {showReviewForm && (
+        <div className="bg-gray-50 p-6 rounded-lg mb-6">
+          <h3 className="font-semibold mb-4">Write Your Review</h3>
+          <div className="mb-4">
+            <label className="block text-sm text-gray-600 mb-2">Rating</label>
+            <StarRating
+              rating={newReview.rating}
+              interactive={true}
+              onRatingChange={(rating) => setNewReview(prev => ({ ...prev, rating }))}
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm text-gray-600 mb-2">Comment</label>
+            <textarea
+              value={newReview.comment}
+              onChange={(e) => setNewReview(prev => ({ ...prev, comment: e.target.value }))}
+              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500"
+              rows="4"
+              placeholder="Share your experience..."
+            />
+          </div>
+          <div className="flex gap-4">
+            <button
+              onClick={handleSubmitReview}
+              className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+              Submit Review
+            </button>
+            <button
+              onClick={() => {
+                setShowReviewForm(false);
+                setNewReview({ rating: 0, comment: '' });
+              }}
+              className="text-gray-600 hover:text-gray-800"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-6">
+        {reviews.length === 0 ? (
+          <p className="text-gray-500 text-center py-6">No reviews yet. Be the first to review!</p>
+        ) : (
+          reviews.map((review) => (
+            <div key={review.id} className="border-b pb-6">
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <p className="font-semibold">{review.userName}</p>
+                  <StarRating rating={review.rating} />
+                </div>
+                <span className="text-sm text-gray-500">{formatDate(review.date)}</span>
+              </div>
+              <p className="text-gray-600 mt-2">{review.comment}</p>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+};
+
 const Appointment = () => {
   const { docId } = useParams();
+  const navigate = useNavigate();
   const [doctor, setDoctor] = useState(null);
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -85,13 +230,27 @@ const Appointment = () => {
     };
 
     try {
-      await axios.post(
+      const appointmentResponse = await axios.post(
         "https://doctor-service-4au2.onrender.com/api/v1/appointments/",
         payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setSuccess("Appointment successfully booked!");
-      setSelectedSlot(null);
+      
+      const appointmentId = appointmentResponse.data.data.id;
+
+      // Navigate to payment page with appointment data
+      navigate('/payment', {
+        state: {
+          plan: { name: `Appointment with Dr. ${doctor.name}` },
+          totalPrice: doctor.price,
+          appointmentData: {
+            appointmentId: appointmentId,
+            doctorEmail: "maulethan.nm@gmail.com",
+            startTime: selectedSlot.slot_start,
+            endTime: selectedSlot.slot_end
+          }
+        }
+      });
     } catch (error) {
       console.error("Booking error:", error);
       setSuccess("Failed to book appointment.");
@@ -184,7 +343,8 @@ const Appointment = () => {
         )}
       </div>
 
-      
+      <ReviewSection doctorId={docId} />
+
       <div className="mt-16">
         <h2 className="text-xl font-semibold text-center mb-2">
           Related Doctors
