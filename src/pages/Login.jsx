@@ -19,10 +19,6 @@ const Login = () => {
         }
       );
 
-      // console.log("LOGIN RESPONSE", res.data);
-      // console.log("asda");
-      // console.log(res);
-
       const token = res.data.accessToken;
 
       if (token) {
@@ -60,10 +56,19 @@ const Login = () => {
         <button onClick={handleLogin} className="btn-primary w-full">
           Login
         </button>
+
         <p className="text-sm text-center mt-4">
           Don’t have an account?{" "}
           <Link to="/register" className="text-blue-600 underline">
             Register here
+          </Link>
+        </p>
+
+        {/* ✅ Добавлена ссылка для входа как доктор */}
+        <p className="text-sm text-center mt-3">
+          Are you a doctor?{" "}
+          <Link to="/doctor-login" className="text-blue-600 underline">
+            Login as Doctor
           </Link>
         </p>
       </div>

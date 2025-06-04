@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import Doctors from "./pages/Doctors";
 import About from "./pages/About";
@@ -14,13 +14,16 @@ import Subscription from "./pages/Subscription";
 import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
 import PaymentPage from "./pages/PaymentPage";
-import Analyzes from "./pages/Analyzes";
-import HealthMonitoring from "./pages/HealthMonitoring";
+import DoctorLogin from "./pages/DoctorLogin";
+import DoctorDashboard from "./pages/DoctorDashboard";
 
 const App = () => {
+  const location = useLocation();
+  const isDoctorPage = ["/doctor-login", "/doctor-dashboard"].includes(location.pathname);
+
   return (
     <div className="mx-4 sm:mx-[10%] flex flex-col min-h-screen">
-      <NavBar />
+      {!isDoctorPage && <NavBar />}
 
       <div className="flex-grow">
         <Routes>
@@ -37,12 +40,12 @@ const App = () => {
           <Route path="/subscription" element={<Subscription />} />
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/appoinment/:docId" element={<Appointment />} />
-          <Route path="/analyzes" element={<Analyzes />} />
-          <Route path="/health-monitoring" element={<HealthMonitoring />} />
+          <Route path="/doctor-login" element={<DoctorLogin />} />
+          <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
         </Routes>
       </div>
 
-      <Footer />
+      {!isDoctorPage && <Footer />}
     </div>
   );
 };

@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 const PaymentPage = () => {
-  // Читаем именно planName и totalPrice:
   const location = useLocation();
-  const { planName, totalPrice } = location.state || {};
+  const navigate = useNavigate();
+  const { token } = useContext(AuthContext);
+  const { planName, totalPrice, appointmentData } = location.state || {};
 
   const [form, setForm] = useState({
     iin: "",
@@ -16,6 +19,33 @@ const PaymentPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  const createMeetingAndUpdateAppointment = async () => {
+    try {
+      // Create meeting
+      const meetResponse = await axios.post(
+        "https://doctor-service-4au2.onrender.com/api/v1/meets/create",
+        {
+          user_email: form.email,
+          doctor_email: appointmentData.doctorEmail,
+          start_time: appointmentData.startTime,
+          end_time: appointmentData.endTime
+        }
+      );
+
+      if (meetResponse.data.success && meetResponse.data.data.meet_link) {
+        // Update appointment with meeting URL
+        await axios.put(
+          `https://doctor-service-4au2.onrender.com/api/v1/appointments/${appointmentData.appointmentId}/meeting-url`,
+          {
+            meeting_url: meetResponse.data.data.meet_link
+          }
+        );
+      }
+    } catch (error) {
+      console.error("Error in meeting creation or appointment update:", error);
+    }
+  };
 
   const handlePayment = async () => {
     if (!form.iin || !form.phone || !form.email || !form.name) {
@@ -33,7 +63,7 @@ const PaymentPage = () => {
           iin: form.iin,
           phone: form.phone,
           amount: totalPrice.toString(),
-          description: `Payment for ${planName}`, // используем planName
+          description: `Payment for ${planName}`,
           accountId: "acc-54321",
           name: form.name,
           email: form.email,
@@ -48,6 +78,12 @@ const PaymentPage = () => {
 
       if (response.data.success) {
         const paymentId = response.data.data;
+        
+        // If this is an appointment payment, create meeting and update appointment
+        if (appointmentData) {
+          await createMeetingAndUpdateAppointment();
+        }
+
         setSuccessMessage("Payment created successfully!");
         setTimeout(() => {
           window.location.href = `https://authorization-service-4b7m.onrender.com/auth/pay?id=${paymentId}`;
@@ -57,6 +93,7 @@ const PaymentPage = () => {
       }
     } catch (err) {
       setError("Failed to create payment.");
+      console.error("Payment error:", err);
     } finally {
       setLoading(false);
     }

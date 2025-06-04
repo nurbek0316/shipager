@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "../context/AuthContext";
+import { doctorProfiles } from "../assets/doctor-profiles";
 
 const MyAppointments = () => {
   const { token } = useContext(AuthContext);
@@ -130,8 +131,16 @@ const MyAppointments = () => {
               className="bg-white p-5 rounded-xl shadow border hover:shadow-md transition-shadow"
             >
               <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                <div className="w-28 h-28 rounded-xl bg-blue-100 flex items-center justify-center text-gray-400 text-sm">
-                  No Image
+                <div className="w-28 h-28 rounded-xl bg-blue-100 flex items-center justify-center overflow-hidden">
+                  {appt.doctor_gender ? (
+                    <img 
+                      src={doctorProfiles[appt.doctor_gender]} 
+                      alt={`${appt.doctor_gender} doctor`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-sm text-gray-400">No Image</span>
+                  )}
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-gray-800">

@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
+import { doctorProfiles } from "../assets/doctor-profiles";
 
 const TopDoctors = () => {
   const navigate = useNavigate();
@@ -35,9 +36,16 @@ const TopDoctors = () => {
             className="border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500"
             key={index}
           >
-            <div className="bg-blue-50 w-full h-48 flex items-center justify-center text-gray-400">
-              
-              <span className="text-sm">No Image</span>
+            <div className="bg-blue-50 w-full h-48 flex items-center justify-center">
+              {item.gender ? (
+                <img 
+                  src={doctorProfiles[item.gender]} 
+                  alt={`${item.gender} doctor`}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-sm text-gray-400">No Image</span>
+              )}
             </div>
             <div className="p-4">
               <div className="flex items-center gap-2 text-sm text-green-500">

@@ -1,7 +1,7 @@
 import appointment_img from './appointment_img.png'
 import header_img from './header_img.png'
 import group_profiles from './group_profiles.png'
-import profile_pic from './profile_pic.png'
+import profile_pic from './profile-icon.png'
 import contact_image from './contact_image.png'
 import about_image from './about_image.png'
 import logo from './logo.svg'
@@ -135,7 +135,7 @@ export const doctors = [
         speciality: 'Pediatricians',
         degree: 'MBBS',
         experience: '2 Years',
-        about: 'Dr. Yerlan — pediatr, spetsializiruetsya na nablyudenii i lechenii detey ot rozhdeniya do 16 let. Ochen’ vnimatel’nyy i kontaktniy vrach.',
+        about: 'Dr. Yerlan — pediatr, spetsializiruetsya na nablyudenii i lechenii detey ot rozhdeniya do 16 let. Ochen vnimatelnyy i kontaktniy vrach.',
         fees: 7000,
         address: {
             line1: 'Ul. Gogolya, 145',
@@ -177,7 +177,7 @@ export const doctors = [
         speciality: 'General physician',
         degree: 'MBBS',
         experience: '4 Years',
-        about: 'Dr. Timur — opytniy terapevt, provedet polnuyu diagnostiku organizma i podberet individual’noe lechenie.',
+        about: 'Dr. Timur — opytniy terapevt, provedet polnuyu diagnostiku organizma i podberet individualnoe lechenie.',
         fees: 8000,
         address: {
             line1: 'Ul. Dostyk, 27',
@@ -205,7 +205,7 @@ export const doctors = [
         speciality: 'Dermatologist',
         degree: 'MBBS',
         experience: '1 Years',
-        about: 'Dr. Ainur — molodoy dermatolog, ispol’zuet lazernye i apparatnye metody v lechenii kozhi.',
+        about: 'Dr. Ainur — molodoy dermatolog, ispolzuet lazernye i apparatnye metody v lechenii kozhi.',
         fees: 6000,
         address: {
             line1: 'Ul. Baitursynova, 65',
@@ -247,7 +247,7 @@ export const doctors = [
         speciality: 'Neurologist',
         degree: 'MBBS',
         experience: '4 Years',
-        about: 'Dr. Ruslan — nevrolog, spetsializiruetsya na lechenii postinsul’tnykh sostoyaniy i radikulita.',
+        about: 'Dr. Ruslan — nevrolog, spetsializiruetsya na lechenii postinsultnyh sostoyaniy i radikulita.',
         fees: 9500,
         address: {
             line1: 'Ul. Tole Bi, 19',

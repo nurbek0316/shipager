@@ -4,6 +4,8 @@ import axios from "axios";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
+import { AppContext } from "../context/AppContext";
+import { doctorProfiles } from "../assets/doctor-profiles";
 
 const StarRating = ({ rating, interactive = false, onRatingChange = () => {} }) => {
   const fullStars = Math.floor(rating);
@@ -264,8 +266,16 @@ const Appointment = () => {
     <div className="p-6 max-w-6xl mx-auto">
       
       <div className="flex flex-col md:flex-row items-start gap-6 bg-white border rounded-xl shadow p-6">
-        <div className="w-40 h-40 bg-blue-100 rounded-xl flex items-center justify-center text-gray-400">
-          No Image
+        <div className="w-40 h-40 bg-blue-100 rounded-xl flex items-center justify-center overflow-hidden">
+          {doctor.gender ? (
+            <img 
+              src={doctorProfiles[doctor.gender]} 
+              alt={`${doctor.gender} doctor`}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-gray-400">No Image</span>
+          )}
         </div>
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
@@ -358,8 +368,16 @@ const Appointment = () => {
               key={doc.id}
               className="bg-blue-50 p-4 rounded-xl text-center hover:shadow-md transition cursor-pointer"
             >
-              <div className="w-full h-32 bg-blue-100 mb-3 flex items-center justify-center text-gray-400 rounded-xl">
-                No Image
+              <div className="w-full h-32 bg-blue-100 mb-3 flex items-center justify-center rounded-xl overflow-hidden">
+                {doc.gender ? (
+                  <img 
+                    src={doctorProfiles[doc.gender]} 
+                    alt={`${doc.gender} doctor`}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-gray-400">No Image</span>
+                )}
               </div>
               <p className="font-semibold text-gray-800">{doc.name}</p>
               <p className="text-sm text-gray-500">{doc.specialization}</p>
